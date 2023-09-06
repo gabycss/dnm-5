@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="description" content="Diseño y nuevos medios" />
+        <style>
+            *,   /* Reseteo completo */
+            *::before,
+            *::after {
+                margin: 0;
+                padding: 0;
+            }
+
+            body {
+                color: rgba(225, 225, 225, 0.6);
+                background: #222;
+                font-family: Helvetica, Arial, sans-serif;
+                font-size: 1rem;
+            }
+
+            a {
+                color: rgba(225, 225, 225, 0.4);
+                text-decoration: underline;
+            }
+
+            a:hover {
+                color: rgba(255, 255, 255, 1);
+                text-decoration: none;
+            }
+
+            div.container {
+                padding: 0 5vw 5vh;
+            }
+
+            header,
+            footer {
+                padding: 4% 2%;
+            }
+
+            header h1 {
+                font-size: calc(1rem + 3.5vw);
+                color: rgba(225, 225, 225, 0.9);
+                line-height: 1.3;
+                text-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+            }
+
+            header h2 {
+                font-size: calc(1rem + 1.75vw);
+                line-height: 1.3;
+                text-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+            }
+
+            section {
+                display: flex;
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+
+            section article {
+                width: 16%;
+                margin: 1%;
+                padding: 1%;
+                background: rgba(60, 60, 60, 0.5);
+                border-radius: 5px 5px;
+                box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+            }
+
+            section article.cl1 {
+                color: rgba(255, 255, 255, 0.9);
+            }
+
+            section article h3 {
+                font-size: calc(3rem + 2vw);
+                line-height: 1;
+            }
+
+            section article p {
+                font-size: 1rem;
+                padding: 0.5rem 0;
+            }
+
+            @media (max-width: 767.98px) {
+                header,
+                footer {
+                    padding: 5%;
+                }
+
+                section article {
+                    width: 40%;
+                    margin: 2%;
+                    padding: 3%;
+                }
+            }
+
+            footer p {
+                width: 100%;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            #opciones {
+                top: 1rem;
+                right: 1rem;
+                position: fixed;
+                padding: 0.25rem;
+                border-radius: 5px 5px;
+                box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+            }
+        </style>
+        <title>DNO037</title>
+    </head>
+    <body>
+        <div class="container">
+            <header>
+                <h1>M4.5+ Earthquakes</h1>
+                <h2>Past 30 days. Updated every minute</h2>
+                <div class="dieciocho">
+                    <br><p style="color:red">Tiki</p><p style="color:blue">Tiki</p><p style="color:white">Tiiii 💃</p><br>
+                    <audio src="laconsentida.mp3" controls="controls"  preload="none"></audio>
+                </div>
+            </header>
+            <main>
+                <section></section>
+            </main>
+            <footer>
+                <p><a href="#">Nombre Apellido</a> <a href="#">DNO037</a></p>
+            </footer>
+        </div>
+        <select name="select" id="opciones">
+            <option>All</option>
+            <option value="Indonesia">Indonesia</option>
+            <option value="Chile">Chile</option>
+            <option value="Russia">Russia</option>
+        </select>
+        <!--Primero vamos a buscar la versión más reciente de jQuery-->
+        <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+        <!--Y ahora podemos usarlo-->
+        <script>
+            $(function () {
+
+                $(".dieciocho").hide();
+
+                $.getJSON("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/4.5_month.geojson", function (data) {
+                    console.log(data);
+                    //una pequeña función para convertir un dato de más abajo
+                    function registro(unix_timestamp) {
+                        var date = new Date(unix_timestamp);
+                        return date;
+                    }
+
+                    //un forEach para construir cada t
+                    data.features.forEach(function (t, i) {
+                        var articuloTipo;
+
+
+                        //par de alternativas para la variable articuloTipo
+                        if (t.properties.place.includes("Indonesia")) { articuloTipo = '<article class="cl">'; } 
+
+                        else if (t.properties.place.includes("Chile")) {
+
+                            articuloTipo = '<article class="cl1">'; 
+                        }
+
+                        else if (t.properties.place.includes("Russia")) {
+
+                            articuloTipo = '<article class="rs">'; 
+                        }
+
+
+                        else { articuloTipo = '<article class="etc">';}
+
+
+                        //aplicación del articuloTipo y la pequeña función
+                        $("section").append(`${articuloTipo}<h3>${t.properties.mag.toFixed(1)}</h3><p>${t.properties.place}</p><p><a href="${t.properties.url}" target="_blank" rel="noopener noreferrer">${registro(t.properties.time)}</a></p></article>`);
+                    });
+                    //algo más para interactuar con el menú
+                    var valor;
+                    $("#opciones").change(function () {
+                        valor = $("select").val();
+                        if (valor == "Indonesia") {
+                            $(".etc, .cl1, .rs, .dieciocho").hide();
+                            $(".cl").show();
+                        } 
+
+                        else if (valor == "Chile"){
+                            $(".etc, .cl, .rs").hide();
+                            $(".cl1").show();
+                            $(".dieciocho").show();
+                        }
+
+                         else if (valor == "Russia"){
+                            $(".etc, .cl, .cl1, .dieciocho").hide();
+                            $(".rs").show();
+                        }
+
+
+                        else {
+                            $(".dieciocho").hide();
+                            $(".cl, .etc, .cl1, .rs ").show();
+                        }
+                    });
+                }); // cierro $.getJSON((){});
+            }); //cierro $(function(){});
+        </script>
+    </body>
+</html>
